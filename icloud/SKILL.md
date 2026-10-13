@@ -1,6 +1,7 @@
 ---
 name: icloud
-description: Use when the user wants something done in their iCloud from this Linux machine - read, search, create, edit, move or delete Apple Notes, resolve a note's sync conflict, sync notes; list, download, upload or delete iCloud Photos; list devices, locate a device, play a sound on it, turn on Lost Mode or show its location history in Find My; list, add, edit, complete or delete iCloud Reminders; look up, add, edit, delete or export iCloud Contacts; or check or fix the iCloud sign-in. Drives the icloud-notes, icloud-photos, icloud-findmy, icloud-reminders, icloud-contacts and icloud-session command-line tools (icloud-for-omarchy).
+description: Use iCloud Notes, Photos, Find My, and shared Apple sign-in from Linux through their CLIs. For contacts and reminders/tasks, use cloud-contacts and cloud-tasks unless explicitly debugging a raw iCloud CLI.
+
 ---
 
 # iCloud from the command line
@@ -95,36 +96,19 @@ each item has its own `error`.
 enough (`ambiguous` → use the ID). Show coordinates only when asked; never
 Lost Mode without an explicit request.
 
-## Reminders: `icloud-reminders`
+## Contacts and tasks
 
-`lists` · `list [LIST] [--completed|--all]` · `show REMINDER` ·
-`add TITLE --list L [--notes T] [--due WHEN]` ·
-`edit REMINDER [--title T] [--notes T] [--due WHEN|--no-due]` ·
-`complete|uncomplete REMINDER` · `delete REMINDER --yes` · `sync`.
-REMINDER: ID, title or unique part (open ones first). WHEN: `2026-10-10`
-(all day), `"2026-10-10 17:30"`, `tomorrow 9:00`, `17:30`, `+2h`. Reads sync
-first (`--cached` skips); writes need the network (`offline`). `due.at` is
-UTC; `alerts` > 0 means alarms set on an Apple device that `--due` does not
-move. Notifications are the timer's job, not yours.
-
-## Contacts: `icloud-contacts`
-
-`list [QUERY]` · `show CONTACT` ·
-`add [--first N] [--last N] [--company C [--is-company]] [--phone [LABEL=]P]... [--email [LABEL=]E]... [--url U]... [--birthday YYYY-MM-DD|MM-DD] [--notes T]` ·
-`edit CONTACT [--first|--last|--company|--job-title|--nickname|--birthday|--notes V] [--phone|--email|--url V]... [--remove-phone|--remove-email|--remove-url V]...` ·
-`delete CONTACT --yes` · `export [CONTACT]... [--output FILE]` · `sync`.
-CONTACT: ID, `me`, name, email, phone (by digits) or unique part of a name
-(`ambiguous` → ask which). QUERY matches names, companies, emails, or phone
-digits. An edit changes only what it names (`--FIELD ""` removes it). A
-delete is on every device with no Recently Deleted: only on an explicit
-request.
+Use the `cloud-contacts` skill/product for unified iCloud and Google address-book
+operations, and `cloud-tasks` for iCloud Reminders and Google Tasks. They reuse
+these iCloud CLIs underneath. Do not create competing direct workflows unless
+the owner explicitly asks to debug/use the raw provider tool or needs a
+provider-only feature the unified CLI does not expose. The upstream product
+reference linked above documents those commands and limitations.
 
 ## Examples (choose only the requested action)
 
 ```bash
 icloud-notes --json read 'Groceries'
-icloud-reminders --json lists
-icloud-contacts --json show 'ann lee'
 icloud-photos --json list --limit 20
 icloud-findmy --json devices
 ```

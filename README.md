@@ -12,12 +12,16 @@ installer; account sign-in remains with the owner.
 | [omdrop](omdrop/SKILL.md) | AirDrop files/links on supported Apple Silicon Omarchy Macs |
 | [wacli](wacli/SKILL.md) | WhatsApp history, sync, and requested sends |
 | [cloud-calendar](cloud-calendar/SKILL.md) | Unified iCloud, Google, and HEY calendars and events |
+| [cloud-contacts](cloud-contacts/SKILL.md) | Unified iCloud/Google contacts, confirmed identity merges, native app |
+| [cloud-tasks](cloud-tasks/SKILL.md) | Unified iCloud Reminders/Google Tasks and native app |
+| [google-workspace](google-workspace/SKILL.md) | Drive, Docs, and Sheets through gws |
 | [cloudmail](cloudmail/SKILL.md) | Own-domain mail, HEY, Gmail, and iCloud Mail |
-| [icloud](icloud/SKILL.md) | Apple Notes, Photos, Find My, Reminders, Contacts, and shared sign-in |
+| [icloud](icloud/SKILL.md) | Apple Notes, Photos, Find My, and shared sign-in |
 | [omacloud](omacloud/SKILL.md) | Encrypted file/settings sync, versions, and machine migration |
 
-Calendar and mail tasks use our unified products, including for iCloud; the
-`icloud` skill handles the remaining iCloud apps. Provider CLIs such as `gws`
+Mail, calendar, contacts, and tasks use our unified products, including for
+iCloud. The `icloud` skill handles Notes, Photos, Find My, and sign-in.
+Drive/Docs/Sheets use `gws` directly via the scoped `google-workspace` skill. Provider CLIs such as `gws`
 and `hey` are dependencies managed through the product workflows, not separate
 agent integrations.
 
@@ -30,7 +34,7 @@ discovery directory. This installs instructions, not the product binaries:
 git clone https://github.com/ferdousbhai/ghost-skills.git
 cd ghost-skills
 mkdir -p ~/.agents/skills ~/.claude/skills
-for skill in wacli cloud-calendar cloudmail icloud omacloud omdrop; do
+for skill in wacli cloud-calendar cloudmail cloud-contacts cloud-tasks google-workspace icloud omacloud omdrop; do
   ln -sT "$PWD/$skill" "$HOME/.agents/skills/$skill"
   ln -sT "../../.agents/skills/$skill" "$HOME/.claude/skills/$skill"
 done
@@ -79,7 +83,7 @@ small. Cloudmail and iCloud adapt their product-owned skills; preserve their
 upstream references and check the product CLI/docs before refreshing them.
 Omdrop adapts its plugin-owned skill and retains its hardware requirements.
 All commands run through Bash/shell. No provider-specific alternative should
-bypass the unified mail/calendar products.
+bypass the unified mail/calendar/contacts/tasks products.
 
 Each skill includes its MIT license. wacli is adapted from OpenClaw; its pinned
 upstream revision and attribution are in [wacli/SKILL.md](wacli/SKILL.md).
