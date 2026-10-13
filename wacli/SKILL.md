@@ -1,6 +1,6 @@
 ---
 name: wacli
-description: Read and search WhatsApp history, sync messages, and send requested WhatsApp messages through the wacli CLI using Bash. Use for WhatsApp tasks, not ordinary replies in the current conversation.
+description: Read and search WhatsApp history, sync messages, and send requested WhatsApp messages through the wacli CLI using Bash. Install the CLI when missing for a requested WhatsApp task. Use for WhatsApp tasks, not ordinary replies in the current conversation.
 ---
 
 # wacli
@@ -28,17 +28,66 @@ harness skill discovery and Bash execution.
   accepted it but local persistence failed). A send timeout can also leave the
   outcome uncertain: check before retrying. Acceptance is not proof of delivery.
 
+## Install when needed
+
+Check `command -v wacli` first. If present, use it; do not replace a managed
+installation merely because a newer release exists. If missing and needed for
+the owner's requested WhatsApp task, explain the install location and proceed
+within that scope. Installing the binary does not authorize pairing, syncing,
+or sending messages.
+
+On Linux with `gh`, download the official release for this CPU, verify its
+published checksum, and install without root into `~/.local/bin`:
+
+```bash
+(
+  set -euo pipefail
+  case "$(uname -m)" in
+    x86_64) wacli_arch=amd64 ;;
+    aarch64|arm64) wacli_arch=arm64 ;;
+    *) echo 'Unsupported CPU: consult the official install guide.' >&2; exit 1 ;;
+  esac
+  wacli_tmp=$(mktemp -d)
+  trap 'rm -rf -- "$wacli_tmp"' EXIT
+  gh release download --repo openclaw/wacli \
+    --pattern "wacli_*_linux_${wacli_arch}.tar.gz" \
+    --pattern checksums.txt --dir "$wacli_tmp"
+  (cd "$wacli_tmp" && sha256sum --ignore-missing -c checksums.txt)
+  tar -xzf "$wacli_tmp"/wacli_*_linux_"$wacli_arch".tar.gz -C "$wacli_tmp" ./wacli
+  install -Dm755 "$wacli_tmp/wacli" "$HOME/.local/bin/wacli"
+  "$HOME/.local/bin/wacli" --version
+)
+```
+
+Check that `~/.local/bin` is on PATH; otherwise invoke the installed binary by
+its full path for this task. Do not silently edit shell configuration. Without
+`gh`, use the matching archive and `checksums.txt` from the
+[official releases](https://github.com/openclaw/wacli/releases/latest), following
+the same verification/install steps. Never bypass a checksum failure.
+
+If Homebrew is already installed on Linux/macOS, the official alternative is
+`brew install openclaw/tap/wacli`. Source builds need Go 1.27.0+ and a C compiler:
+
+```bash
+CGO_ENABLED=1 CGO_CFLAGS="-Wno-error=missing-braces" \
+  go install -tags sqlite_fts5 github.com/openclaw/wacli/cmd/wacli@latest
+```
+
+Source installs go to `GOBIN`, or `$(go env GOPATH)/bin` when unset; verify that
+location is on PATH. Preserve cgo and the FTS build tag. Consult the
+[official install guide](https://github.com/openclaw/wacli/blob/main/docs/install.md)
+for other platforms or changed requirements; do not install a compiler/toolchain
+just to avoid using the available release archive.
+
 ## Setup and freshness
 
 ```bash
-command -v wacli
 wacli auth status --read-only --json
 wacli doctor --read-only --json
 ```
 
-If missing, arrange installation of the official wacli CLI; the skill does not
-install it. If unlinked, have the owner run `wacli auth` in their terminal and
-scan the QR code. Do not read session databases or expose credentials.
+If unlinked, have the owner run `wacli auth` in their terminal and scan the QR
+code. Do not read session databases or expose credentials.
 
 Reads query the local archive. If it is stale, explain that limitation; when
 the owner requests a sync, use `wacli sync --once`. `wacli sync --follow` keeps

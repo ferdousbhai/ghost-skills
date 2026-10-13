@@ -9,6 +9,7 @@ installer; account sign-in remains with the owner.
 
 | Skill | Product and tasks |
 | --- | --- |
+| [omdrop](omdrop/SKILL.md) | AirDrop files/links on supported Apple Silicon Omarchy Macs |
 | [wacli](wacli/SKILL.md) | WhatsApp history, sync, and requested sends |
 | [cloud-calendar](cloud-calendar/SKILL.md) | Unified iCloud, Google, and HEY calendars and events |
 | [cloudmail](cloudmail/SKILL.md) | Own-domain mail, HEY, Gmail, and iCloud Mail |
@@ -29,7 +30,7 @@ discovery directory. This installs instructions, not the product binaries:
 git clone https://github.com/ferdousbhai/ghost-skills.git
 cd ghost-skills
 mkdir -p ~/.agents/skills ~/.claude/skills
-for skill in wacli cloud-calendar cloudmail icloud omacloud; do
+for skill in wacli cloud-calendar cloudmail icloud omacloud omdrop; do
   ln -sT "$PWD/$skill" "$HOME/.agents/skills/$skill"
   ln -sT "../../.agents/skills/$skill" "$HOME/.claude/skills/$skill"
 done
@@ -76,6 +77,7 @@ installations, authentication, archives, and sync state intact.
 Keep activation descriptions precise, command examples version-aware, and skills
 small. Cloudmail and iCloud adapt their product-owned skills; preserve their
 upstream references and check the product CLI/docs before refreshing them.
+Omdrop adapts its plugin-owned skill and retains its hardware requirements.
 All commands run through Bash/shell. No provider-specific alternative should
 bypass the unified mail/calendar products.
 
