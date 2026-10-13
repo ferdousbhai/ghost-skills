@@ -100,9 +100,8 @@ Lost Mode without an explicit request.
 
 Use the `cloud-contacts` skill/product for unified iCloud and Google address-book
 operations, and `cloud-tasks` for iCloud Reminders and Google Tasks. They reuse
-these iCloud CLIs underneath. Do not create competing direct workflows unless
-the owner explicitly asks to debug/use the raw provider tool or needs a
-provider-only feature the unified CLI does not expose. The upstream product
+these iCloud CLIs underneath. Do not create competing direct workflows and never reinstall the retired legacy apps. Their private backends and
+notification lifecycle belong to those unified products. The upstream product
 reference linked above documents those commands and limitations.
 
 ## Examples (choose only the requested action)

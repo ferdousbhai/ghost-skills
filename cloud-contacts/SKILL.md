@@ -21,18 +21,21 @@ git clone https://github.com/ferdousbhai/cloud-contacts.git "$HOME/.local/share/
 ```
 
 If that checkout already exists, inspect it instead of overwriting it. Python
-3.10+ is sufficient for CLI use. GTK4/libadwaita/PyGObject are optional for the
+3.10+ runs the CLI; Rust/Cargo builds the bundled private Apple provider during
+source installation. GTK4/libadwaita/PyGObject are optional for the
 native app (`cloud-contacts --app`); Omarchy packages are `gtk4 libadwaita
 python-gobject`. Follow the desktop installation skill if package/config changes
 are needed. Ensure `~/.local/bin` is on PATH, or use the full binary path.
 
 ```bash
+cloud-contacts migrate --json
 cloud-contacts account list --json
 cloud-contacts status --json
 ```
 
 Link only the requested account: `account add icloud`, or `account add google
---name work`. iCloud needs `icloud-contacts` and the shared icloud-session sign-in.
+--name work`. The iCloud backend is bundled; only the shared icloud-session sign-in is needed.
+The retired icloud-contacts package must not be installed.
 Google needs `gws` (`npm install -g @googleworkspace/cli` or an official binary).
 Each Google account defaults to its own product config directory; use
 `--gws-config PATH` only to explicitly select an existing authorized context.
@@ -88,3 +91,12 @@ source ID. Email/phone edits add values; other provider fields stay intact.
 Deletion previews until `--yes` and affects the source account; iCloud contacts
 have no Recently Deleted. Only delete on an explicit request. Re-read after
 uncertain writes instead of blindly retrying.
+
+## Retired app migration
+
+This unified product replaces its legacy Apple-only app, including its bundled
+provider code. Run `cloud-contacts migrate` to adopt an existing Apple cache in place;
+no data is copied/moved and no network call is made. Removing an account does not
+silently relink it on the next run. Source installers compile the private backend;
+Arch packaging declares the old app package replaced/conflicting. Never delete
+legacy cache or notification-history directories when removing the old package.
