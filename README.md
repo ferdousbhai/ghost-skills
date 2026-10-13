@@ -1,50 +1,83 @@
 # Ghost skills
 
-Portable skills for Ghost and local coding agents. Skills teach the harness to
-use installed CLIs through Bash/shell; they add no daemon tools or MCP servers.
+Portable Bash/shell skills for Ghost and local coding agents. They use installed
+product CLIs through native harness tools, without adding daemon integrations or
+MCP servers. Missing products can be installed using each skill's documented
+installer; account sign-in remains with the owner.
 
 ## Skills
 
-- [wacli](wacli/SKILL.md): read/search WhatsApp history, sync, and send requested
-  messages using the official wacli CLI. Adapted from OpenClaw; attribution and
-  the upstream revision are in the skill, with its MIT license alongside it.
+| Skill | Product and tasks |
+| --- | --- |
+| [wacli](wacli/SKILL.md) | WhatsApp history, sync, and requested sends |
+| [cloud-calendar](cloud-calendar/SKILL.md) | Unified iCloud, Google, and HEY calendars and events |
+| [cloudmail](cloudmail/SKILL.md) | Own-domain mail, HEY, Gmail, and iCloud Mail |
+| [icloud](icloud/SKILL.md) | Apple Notes, Photos, Find My, Reminders, Contacts, and shared sign-in |
+| [omacloud](omacloud/SKILL.md) | Encrypted file/settings sync, versions, and machine migration |
 
-## Install
+Calendar and mail tasks use our unified products, including for iCloud; the
+`icloud` skill handles the remaining iCloud apps. Provider CLIs such as `gws`
+and `hey` are dependencies managed through the product workflows, not separate
+agent integrations.
 
-Install the required CLI separately. Clone this repository and link only the
-skills you want into the harness's discovery directory:
+## Install skills
+
+On Linux, clone this repository and link the skills you want into the harness's
+discovery directory. This installs instructions, not the product binaries:
 
 ```sh
 git clone https://github.com/ferdousbhai/ghost-skills.git
 cd ghost-skills
-mkdir -p ~/.agents/skills
-ln -s "$PWD/wacli" ~/.agents/skills/wacli
-mkdir -p ~/.claude/skills
-ln -s ../../.agents/skills/wacli ~/.claude/skills/wacli
+mkdir -p ~/.agents/skills ~/.claude/skills
+for skill in wacli cloud-calendar cloudmail icloud omacloud; do
+  ln -sT "$PWD/$skill" "$HOME/.agents/skills/$skill"
+  ln -sT "../../.agents/skills/$skill" "$HOME/.claude/skills/$skill"
+done
 ```
 
-If either link path already exists, inspect it first. Keep a working discovery
-link; move an older copied skill aside before replacing it. These commands do
-not overwrite existing paths. Keep the clone in place while using the links.
-Start a fresh agent session to discover the skill. Other harnesses may use a
-different machine skill directory.
+Choose fewer names in the loop if desired. `ln -sT` refuses existing paths;
+inspect those paths first, keep working discovery links, and move older copied
+skills aside before replacing them. Never overwrite an unrelated skill. Keep
+the clone in place while using links. Start a fresh agent session after installing.
+Other harnesses may use a different machine skill directory.
 
-For one Ghost persona instead, link the skill to
-`~/ghosts/<name>/skills/wacli`; Ghost exposes that directory as project skills
-to its harnesses. The source checkout alone is not automatically discovered.
+For one Ghost persona instead, link selected skill directories under
+`~/ghosts/<name>/skills/`; Ghost exposes those as project skills. For example:
+
+```sh
+mkdir -p ~/ghosts/sage/skills
+ln -sT "$PWD/cloud-calendar" ~/ghosts/sage/skills/cloud-calendar
+```
+
+Replace `sage` with an existing ghost. The source checkout alone is not
+automatically discovered. No Ghost daemon restart is needed.
+
+## Use and install products
+
+Ask the ghost for the actual task: check tomorrow's calendar, find an email,
+look up a contact, or inspect sync status. Each skill starts with CLI detection
+and a status/help check, explains the official install path when missing, and
+keeps privileged installation within the owner's authorized task. If sudo needs
+a password, the owner runs it in their terminal. Installing a package does not
+authorize DNS changes, account creation, file sync, device approval, or sends.
+
+The agent should use existing sign-ins and stop for the owner's browser/Apple
+sign-in when needed. Never paste passwords, OAuth callbacks, or recovery keys
+into chat. See each skill for provider limitations and partial-result warnings.
 
 ## Update or remove
 
-Review upstream changes, then run `git pull --ff-only` in this clone to refresh
-linked skills. To uninstall, remove only the discovery symlinks you created;
-this leaves CLI installations, authentication, and message archives untouched.
+Review changes, then run `git pull --ff-only` in this clone to refresh linked
+skills. To uninstall a skill, remove only its discovery symlinks; leave product
+installations, authentication, archives, and sync state intact.
 
-## Scope and attribution
+## Maintain
 
-Keep skills small and driven by actual product needs. Provider integrations
-belong to the unified service CLIs we maintain, rather than separate
-Google-only or Apple-only workflows. This repository currently contains only
-wacli; it does not install or configure any service integration.
+Keep activation descriptions precise, command examples version-aware, and skills
+small. Cloudmail and iCloud adapt their product-owned skills; preserve their
+upstream references and check the product CLI/docs before refreshing them.
+All commands run through Bash/shell. No provider-specific alternative should
+bypass the unified mail/calendar products.
 
-Each adapted skill retains its source attribution and license. The wacli
-adaptation is MIT-licensed under [wacli/LICENSE](wacli/LICENSE).
+Each skill includes its MIT license. wacli is adapted from OpenClaw; its pinned
+upstream revision and attribution are in [wacli/SKILL.md](wacli/SKILL.md).
