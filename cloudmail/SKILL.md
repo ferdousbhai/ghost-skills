@@ -77,21 +77,27 @@ Verify with `cloudmail account list --json`. Expired sign-in (`account_unauthori
 
 ## Use
 
-```sh
-cloudmail inbox --unread --json            # also: archive, sent, blocked; --limit N, --before <last_at>
-cloudmail threads list --folder all        # screener|inbox|archive|sent|blocked|all (+ HEY: feed, paper-trail, set-aside, reply-later)
-cloudmail search "invoice"                 # all folders but blocked; Gmail syntax works for Gmail
-cloudmail thread read <tid> --json         # messages[].text; add --mark-read to mark it read
-cloudmail thread archive|unarchive|markread|unread <tid>...
-cloudmail thread delete <tid>...          # yours: for good (--yes); linked: to its Trash
-cloudmail screener --json                  # senders waiting: [{email, name, thread_count, last_subject}]
-cloudmail screener approve|block <email>... # decides that sender in every account
-cloudmail reply <tid> -m "…" [--all] [--attach f] --dry-run --json   # then without --dry-run
-cloudmail compose --to a@x.com --subject S -m "…" [--from <your addr>] [--attach f]
-cloudmail mailbox list --json              # the user's own addresses (valid --from values)
-cloudmail attachment list <tid>; cloudmail attachment save <aid> -o ~/Downloads/
-cloudmail watch --folder all --interval 30 # JSONL stream of new/updated threads (worker mail only)
+```bash
+cloudmail inbox --unread --json --limit 20
+cloudmail threads list --folder all --json
+cloudmail search 'invoice' --json
+cloudmail thread read '<thread-id>' --json
+cloudmail screener --json
+cloudmail mailbox list --json
+cloudmail attachment list '<thread-id>' --json
+cloudmail attachment save '<attachment-id>' -o './Downloads/'
+# Draft preview; remove --dry-run only for an authorized send:
+cloudmail reply '<thread-id>' -m 'Thanks for the update.' --dry-run --json
+cloudmail compose --to 'person@example.com' --subject 'Agenda' -m 'Draft text' --dry-run --json
 ```
+
+Replace quoted placeholders with returned IDs. `thread archive|unarchive|markread|unread`
+and `screener approve|block` denote alternative subcommands, not shell pipelines.
+`thread delete` permanently deletes own-domain threads with `--yes`; linked threads
+move to Trash. Use mutation commands only for the owner's requested action.
+For an explicitly requested stream, `cloudmail watch --folder all --interval 30`
+emits JSONL for worker mail only. Do not start it for a one-off inbox check.
+
 
 IDs: threads `t_…`, messages `m_…`, attachments `a_…`; linked ones are prefixed `hey:`, `gmail:`,
 `icloud:` and go back to that account. Times are Unix ms. Long bodies: `--message-file f` or stdin (`-m -`).
