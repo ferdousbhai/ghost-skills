@@ -9,6 +9,7 @@ installer; account sign-in remains with the owner.
 
 | Skill | Product and tasks |
 | --- | --- |
+| [omdrop-install](omdrop-install/SKILL.md) | Install Omdrop (AirDrop) on supported Apple Silicon Omarchy Macs; usage comes from Omdrop's own skill |
 | [wacli](wacli/SKILL.md) | WhatsApp history, sync, and requested sends |
 | [cloud-calendar](cloud-calendar/SKILL.md) | Unified iCloud, Google, and HEY calendars and events |
 | [cloud-contacts](cloud-contacts/SKILL.md) | Unified iCloud/Google contacts, confirmed identity merges, native app |
@@ -25,10 +26,9 @@ and `hey` are dependencies managed through the product workflows, not separate
 agent integrations.
 
 Products that ship and maintain their own agent skill are not duplicated here.
-For AirDrop on supported Apple Silicon Omarchy Macs, install the
-[Omdrop plugin](https://github.com/brentkearney/omdrop-plugin)
-(`omarchy plugin add https://github.com/brentkearney/omdrop-plugin.git`);
-`omdrop setup` links its bundled skill into `~/.agents`, `~/.claude`,
+For those, this repository carries only an install skill under a different
+name (`<product>-install`), so it never collides with the product's skill.
+Omdrop's plugin links its bundled `omdrop` skill into `~/.agents`, `~/.claude`,
 `~/.codex`, and `~/.pi/agent` skill directories and keeps it current.
 
 ## Install skills
@@ -40,7 +40,7 @@ discovery directory. This installs instructions, not the product binaries:
 git clone https://github.com/ferdousbhai/ghost-skills.git
 cd ghost-skills
 mkdir -p ~/.agents/skills ~/.claude/skills
-for skill in wacli cloud-calendar cloudmail cloud-contacts cloud-tasks google-workspace icloud omacloud; do
+for skill in wacli cloud-calendar cloudmail cloud-contacts cloud-tasks google-workspace icloud omacloud omdrop-install; do
   ln -sT "$PWD/$skill" "$HOME/.agents/skills/$skill"
   ln -sT "../../.agents/skills/$skill" "$HOME/.claude/skills/$skill"
 done
